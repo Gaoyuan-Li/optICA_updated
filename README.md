@@ -52,6 +52,16 @@ Arguments
 ./run_ica.sh -n 16 -min 100 -max 300 -i 96 -v -time 3600 -o ../_aeruPHAGE_p_aeru ../log_tpm_p_aeru.csv
 ```
 
+## Conda environment
+
+Please install the conda environment using the yml file
+
+**Change the 'prefix' before install it**
+
+```python
+conda env create -f optICA_updated.yml
+```
+
 ## Notes
 
 OptICA may take dozens of hours to run using default arguments, depending on the size of your dataset. This can be accelerated by
