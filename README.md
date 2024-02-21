@@ -5,7 +5,7 @@ This repository contains scripts for running Independent Component Analysis (ICA
 
 ###### General Adaptations
 
-The scripts have been adapted for compatibility with Python 3.12 and scikit-learn 1.4.1
+The scripts have been adapted for compatibility with **Python 3.12** and **scikit-learn 1.4.1**
 
 ###### Timeout Mechanism
 
