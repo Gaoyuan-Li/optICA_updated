@@ -64,6 +64,10 @@ while [[ $# -gt 0 ]]; do
             CORES=$2
             shift;
             shift;;
+        -time|--time-out)
+            TIMEOUT=$2
+            shift;
+            shift;;
         -l|--logfile)
             LOGFILE=$2
             shift;
@@ -152,12 +156,7 @@ for dim in $(seq $MINDIM $STEP $MAXDIM); do
     redirect_cmd echo $bar
     redirect_cmd echo ""
     
-    redirect_cmd timeout -k 10 1h mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py random_restart_ica.py -f $FILE -i $ITER -o $outsubdir -t $TOL -d $dim 2>&1
-
-    if [ $? -eq 124 ]; then
-        echo "The random restart was terminated because it ran for more than 1 hour."
-    fi
-    
+    redirect_cmd mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py random_restart_ica_MPI.py -f $FILE -i $ITER -o $outsubdir -t $TOL -d $dim -time $TIMEOUT 2>&1
     redirect_cmd mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py compute_distance.py -i $ITER -o $outsubdir 2>&1
     redirect_cmd mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py cluster_components.py -i $ITER -o $outsubdir 2>&1
     

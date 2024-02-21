@@ -17,6 +17,7 @@ TOL: Tolerance for ICA (optional, default: 1e-7)
 
 import argparse
 import os
+import threading
 
 # Limiting threads for various libraries
 os.environ["OMP_NUM_THREADS"] = "1"  # OpenMP
@@ -62,8 +63,15 @@ parser.add_argument(
     default=None,
     help="Number of dimensions to search for",
 )
-args = parser.parse_args()
+parser.add_argument(
+    "-time",
+    type=int,
+    dest="time_out",
+    default=3600,
+    help="Timeout for each ICA run in seconds (default: 3600)",
+)
 
+args = parser.parse_args()
 
 # -----------------------------------------------------------
 # Split the work
@@ -73,6 +81,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 n_iters = args.iterations
+timeout = args.time_out
 
 worker_tasks = {w: [] for w in range(size)}
 w_idx = 0
@@ -113,7 +122,14 @@ def timeit(start):
         print("{:.2f} hours elapsed".format(t / 3600))
     return end
 
-
+# Watcher function to monitor execution time
+def timeout_watcher(start_time, timeout):
+    while True:
+        time.sleep(1)  # Check every second
+        if time.time() - start_time > timeout:
+            print(f"Processor {rank} timed out. Aborting MPI job.")
+            comm.Abort(1)  # Abort the MPI job
+            
 t = time.time()
 
 # -----------------------------------------------------------
@@ -146,6 +162,7 @@ if rank == 0:
         os.makedirs(tmp_dir)
 
 # -----------------------------------------------------------
+# -----------------------------------------------------------
 # Run ICA
 
 if rank == 0:
@@ -155,7 +172,11 @@ if rank == 0:
 S = []
 A = []
 
-t1 = time.time()
+start_time = time.time()
+
+# Start the timeout watcher thread
+watcher = threading.Thread(target=timeout_watcher, args=(start_time, timeout))
+watcher.start()
 
 for counter, i in enumerate(worker_tasks[rank]):
     ica = FastICA(whiten='unit-variance', max_iter=int(1e10), tol=tol, n_components=k_comp)
@@ -172,15 +193,8 @@ A_all.columns = range(A_all.shape[1])
 A_all.to_csv(os.path.join(tmp_dir, "proc_{}_A.csv".format(rank)))
 
 # Wait for processors to finish
-if rank == 0:
-    test = 1
-else:
-    test = 0
-    
-test = comm.bcast(test, root=0)
-
 comm.Barrier()
 
 if rank == 0:
     print("\nAll ICA runs complete!")
-    timeit(t1)
+    timeit(start_time)
