@@ -1,21 +1,6 @@
 # optICA_updated
 This folder contains all scripts required to run ICA at the optimal dimensionality to identify robust components (optICA).
 
-OptICA may take dozens of hours to run using default arguments, depending on the size of your dataset. This can be accelerated by
-
-1. using more processors (i.e. a supercomputer),
-1. loosening the tolerance (e.g. `-t 1e-3`), or
-1. increasing the dimensionality step size (e.g. `--step-size 20`).
-
-Also, if your dataset has over 500 datasets, we recommend limiting the maximum dimensionality to the number of unique conditions in your dataset.
-
-The `run_ica.sh` script produces three files and a subdirectory:
-
-- `M.csv`: The **M** matrix
-- `A.csv`: The **A** matrix
-- `dimension_analysis.pdf`: Plot showing the optimal ICA dimensionality
-- `ica_runs/`: A subdirectory containing all the **M** and **A** matrices for all dimensions
-
 ## Update - 2/21/2024
 
 ###### General Adaptations
@@ -66,3 +51,20 @@ Arguments
 ```bash
 ./run_ica.sh -n 16 -min 100 -max 300 -i 96 -v -time 3600 -o ../_aeruPHAGE_p_aeru ../log_tpm_p_aeru.csv
 ```
+
+## Notes
+
+OptICA may take dozens of hours to run using default arguments, depending on the size of your dataset. This can be accelerated by
+
+1. using more processors (i.e. a supercomputer),
+1. loosening the tolerance (e.g. `-t 1e-3`), or
+1. increasing the dimensionality step size (e.g. `--step-size 20`).
+
+Also, if your dataset has over 500 datasets, we recommend limiting the maximum dimensionality to the number of unique conditions in your dataset.
+
+The `run_ica.sh` script produces three files and a subdirectory:
+
+- `M.csv`: The **M** matrix
+- `A.csv`: The **A** matrix
+- `dimension_analysis.pdf`: Plot showing the optimal ICA dimensionality
+- `ica_runs/`: A subdirectory containing all the **M** and **A** matrices for all dimensions
