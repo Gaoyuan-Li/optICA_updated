@@ -3,6 +3,12 @@ This repository contains scripts for running Independent Component Analysis (ICA
 
 ## Update - 2/26/2024
 
+###### General Updates
+
+Fixed numpy sparse matrix and the order of creating folder to get compatible with large amount of cores
+
+## Update - 2/21/2024
+
 ###### General Adaptations
 
 The scripts have been adapted for compatibility with **Python 3.12** and **scikit-learn 1.4.1**
@@ -11,7 +17,7 @@ The scripts have been adapted for compatibility with **Python 3.12** and **sciki
 
 A timeout mechanism has been implemented. This feature is designed to stop any processor that exceeds a predefined time limit, preventing potential stuck on certain processor.
 
-**Timeout Setting**: 1 hour - The timeout limit can be adjusted as needed in the script settings by **-time**
+**Timeout Setting**: 1 hour by default - The timeout limit can be adjusted as needed in the script settings by **-time**
 
 ###### LOGFILE Name Update
 
