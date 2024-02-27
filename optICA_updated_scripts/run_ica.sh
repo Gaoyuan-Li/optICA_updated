@@ -6,16 +6,17 @@ function usage {
     printf "\nUsage: run_ica.sh [ARGS] FILE\n"
     printf "\n"
     printf "Arguments\n"
-    printf "  -i|--iter <n_iter>	      Number of random restarts (default: 100)\n"
-    printf "  -t|--tolerance <tol>        Tolerance (default: 1e-7)\n"
-    printf "  -n|--n-cores <n_cores>      Number of cores to use (default: 8)\n"
-    printf "  -max|--max-dim <max_dim>      Maximum dimensionality for search (default: n_samples)\n"
-    printf "  -min|--min-dim <min_dim>      Minimum dimensionality for search (default: 20)\n"
-    printf "  -s|--step-size <step_size>  Dimensionality step size (default: n_samples/25)\n"
-    printf "  -o|--outdir <path>          Output directory for files (default: current directory)\n"
-    printf "  -l|--logfile                Name of log file to use if verbose is off (default: ica.log)\n"
-    printf "  -v|--verbose                Send output to stdout rather than writing to file\n"
-    printf "  -h|--help                   Display help information\n"
+    printf "  -i|--iter <n_iter>	       Number of random restarts (default: 100)\n"
+    printf "  -t|--tolerance <tol>         Tolerance (default: 1e-7)\n"
+    printf "  -n|--n-cores <n_cores>       Number of cores to use (default: 8)\n"
+    printf "  -max|--max-dim <max_dim>     Maximum dimensionality for search (default: n_samples)\n"
+    printf "  -min|--min-dim <min_dim>     Minimum dimensionality for search (default: 20)\n"
+    printf "  -s|--step-size <step_size>   Dimensionality step size (default: n_samples/25)\n"
+    printf "  -o|--outdir <path>           Output directory for files (default: current directory)\n"
+    printf "  -l|--logfile                 Name of log file to use if verbose is off (default: ica.log)\n"
+    printf "  -v|--verbose                 Send output to stdout rather than writing to file\n"
+    printf "  -h|--help                    Display help information\n"
+    printf "  -time|--time-out             Timeout for each ICA run in seconds\n"
     printf "\n"
     exit 1
 }
@@ -157,6 +158,7 @@ for dim in $(seq $MINDIM $STEP $MAXDIM); do
     redirect_cmd echo ""
     
     redirect_cmd mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py random_restart_ica_MPI.py -f $FILE -i $ITER -o $outsubdir -t $TOL -d $dim -time $TIMEOUT 2>&1
+    redirect_cmd python Merge_components_files.py -n $CORES -o $outsubdir 2>&1
     redirect_cmd mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py compute_distance.py -i $ITER -o $outsubdir 2>&1
     redirect_cmd mpiexec --mca btl_vader_single_copy_mechanism none -n $CORES --oversubscribe python -m mpi4py cluster_components.py -i $ITER -o $outsubdir 2>&1
     

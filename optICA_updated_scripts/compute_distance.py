@@ -14,6 +14,8 @@ ITERATIONS: Total number of ICA runs
 
 import argparse
 import os
+import re
+
 import shutil
 import sys
 import time
@@ -23,7 +25,6 @@ import numpy as np
 import pandas as pd
 from mpi4py import MPI
 from scipy import sparse
-
 
 # Argument parsing
 parser = argparse.ArgumentParser(description="Generates Distance Matrix")
@@ -96,31 +97,13 @@ if rank == 0:
 
 t1 = time.time()
 
-# get all files in directory
-all_files = os.listdir(tmp_dir)
-
-# filter only proc_{N}_S.csv files
-proc_files = [f for f in all_files if 'proc_' in f and f.endswith('_S.csv')]
-
-# sort files by their number to ensure correct pairing
-proc_files.sort(key=lambda x: int(x.split('_')[1]))
-
-# get all pairs of files, including pairs with the same indices
-pairs = list(itertools.product(proc_files, repeat=2))
-
-# loop through every pair
-for pair in pairs:
-    S1 = pd.read_csv(os.path.join(tmp_dir, pair[0]), index_col=0)
-    S2 = pd.read_csv(os.path.join(tmp_dir, pair[1]), index_col=0)
-
-    # Calculate distance
+# Load S matrices piece-wise to conserve memory
+for i, j in worker_tasks[rank]:
+    S1 = pd.read_csv(os.path.join(tmp_dir, "proc_{}_S.csv".format(i)), index_col=0)
+    S2 = pd.read_csv(os.path.join(tmp_dir, "proc_{}_S.csv".format(j)), index_col=0)
     dist = abs(np.dot(S1.T, S2))
     dist[dist < 0.5] = 0
-
-    # Define file name for saving
-    dist_file = os.path.join(tmp_dir, "dist_{}_{}.npz".format(pair[0].split('_')[1], pair[1].split('_')[1]))
-
-    # Save as sparse matrix
+    dist_file = os.path.join(tmp_dir, "dist_{}_{}.npz".format(i, j))
     sparse_dist = sparse.coo_matrix(np.clip(dist, 0, 1))
     sparse.save_npz(dist_file, sparse_dist)
 
@@ -130,7 +113,6 @@ if rank == 0:
 else:
     test = 0
 test = comm.bcast(test, root=0)
-
 if rank == 0:
     print("\nDistance matrix completed!")
     timeit(t1)

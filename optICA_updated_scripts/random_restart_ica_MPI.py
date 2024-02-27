@@ -107,6 +107,13 @@ else:
     if rank == 0:
         if not os.path.isdir(OUT_DIR):
             os.makedirs(OUT_DIR)
+            
+# Create temporary directory for files
+tmp_dir = os.path.join(OUT_DIR, "tmp")
+
+if rank == 0:
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
 
 # -----------------------------------------------------------
 
@@ -124,11 +131,15 @@ def timeit(start):
 
 # Watcher function to monitor execution time
 def timeout_watcher(start_time, timeout):
+    global processing_complete
+    processing_complete = False
     while True:
-        time.sleep(1)  # Check every second
+        time.sleep(1)
         if time.time() - start_time > timeout:
             print(f"Processor {rank} timed out. Aborting MPI job.")
-            comm.Abort(1)  # Abort the MPI job
+            comm.Abort(1)
+        if processing_complete:
+            break  # Exit the loop if processing is complete
             
 t = time.time()
 
@@ -154,13 +165,6 @@ if args.n_dims is None:
 else:
     k_comp = args.n_dims
 
-# Create temporary directory for files
-tmp_dir = os.path.join(OUT_DIR, "tmp")
-
-if rank == 0:
-    if not os.path.exists(tmp_dir):
-        os.makedirs(tmp_dir)
-
 # -----------------------------------------------------------
 # -----------------------------------------------------------
 # Run ICA
@@ -180,17 +184,17 @@ watcher.start()
 
 for counter, i in enumerate(worker_tasks[rank]):
     ica = FastICA(whiten='unit-variance', max_iter=int(1e10), tol=tol, n_components=k_comp)
-    S.append(pd.DataFrame(ica.fit_transform(X), index=X.index))
-    A.append(pd.DataFrame(ica.mixing_, index=X.columns))
+    S = pd.DataFrame(ica.fit_transform(X), index=X.index)
+    A = pd.DataFrame(ica.mixing_, index=X.columns)
+    
+    S.to_csv(os.path.join(tmp_dir, "proc_tmp_{}_S.csv".format(i)))
+    A.to_csv(os.path.join(tmp_dir, "proc_tmp_{}_A.csv".format(i)))
+
     print("\nCompleted run {} of {} on Processor {}".format(counter + 1, n_tasks, rank))
     t = timeit(t)
-
-S_all = pd.concat(S, axis=1)
-S_all.columns = range(S_all.shape[1])
-S_all.to_csv(os.path.join(tmp_dir, "proc_{}_S.csv".format(rank)))
-A_all = pd.concat(A, axis=1)
-A_all.columns = range(A_all.shape[1])
-A_all.to_csv(os.path.join(tmp_dir, "proc_{}_A.csv".format(rank)))
+    
+# After completing the tasks
+processing_complete = True
 
 # Wait for processors to finish
 comm.Barrier()
