@@ -1,7 +1,7 @@
 # optICA_updated
 This repository contains scripts for running Independent Component Analysis (ICA) from a set of dimensions and get optimal dimensionality (optICA). It is updated from [SBRG/modulome-workflow/4_optICA](https://github.com/SBRG/modulome-workflow/tree/main/4_optICA), incorporating the latest enhancements and fixes.
 
-## Update - 2/21/2024
+## Update - 2/26/2024
 
 ###### General Adaptations
 
