@@ -5,7 +5,7 @@ This repository contains scripts for running Independent Component Analysis (ICA
 
 ###### General Updates
 
-Fixed numpy sparse matrix and the order of creating folder to get compatible with large amount of cores
+Fixed numpy sparse matrix and the order of creating folders to get compatible with large amount of cores
 
 ## Update - 2/21/2024
 
