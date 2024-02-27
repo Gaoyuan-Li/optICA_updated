@@ -1,5 +1,5 @@
 # optICA_updated
-[![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)  [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4.1-009688.svg?style=flat&logo=Scikit-learn&logoColor=white)](https://fastapi.tiangolo.com)  [![MPI4py](https://img.shields.io/badge/mpi4py-3.1.5-FF4B4B.svg?style=flat&logo=Streamlit&logoColor=white)]([MPI for Python — MPI for Python 3.1.5 documentation (mpi4py.readthedocs.io)](https://mpi4py.readthedocs.io/en/stable/))
+[![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)  [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4.1-009688.svg?style=flat&logo=Scikit-learn&logoColor=white)](https://fastapi.tiangolo.com)  [![MPI4py](https://img.shields.io/badge/mpi4py-3.1.5-FF4B4B.svg?style=flat&logo=Streamlit&logoColor=white)](https://mpi4py.readthedocs.io/en/stable/)
 
 [![jupyter](https://img.shields.io/badge/Jupyter-Lab-F37626.svg?style=flat&logo=Jupyter)](https://jupyterlab.readthedocs.io/en/stable)
 
