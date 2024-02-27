@@ -1,4 +1,8 @@
 # optICA_updated
+[![python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org) [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4.1-009688.svg?style=flat&logo=Scikit-learn&logoColor=white)](https://fastapi.tiangolo.com)[![MPI4py](https://img.shields.io/badge/mpi4py-3.1.5-FF4B4B.svg?style=flat&logo=Streamlit&logoColor=white)](https://streamlit.io)
+
+[![jupyter](https://img.shields.io/badge/Jupyter-Lab-F37626.svg?style=flat&logo=Jupyter)](https://jupyterlab.readthedocs.io/en/stable)
+
 This repository contains scripts for running Independent Component Analysis (ICA) from a set of dimensions and get optimal dimensionality (optICA). It is updated from [SBRG/modulome-workflow/4_optICA](https://github.com/SBRG/modulome-workflow/tree/main/4_optICA), incorporating the latest enhancements and fixes.
 
 ## Update - 2/26/2024
