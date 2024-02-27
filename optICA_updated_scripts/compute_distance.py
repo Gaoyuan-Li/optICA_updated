@@ -16,6 +16,13 @@ import argparse
 import os
 import re
 
+# Limiting threads for various libraries
+os.environ["OMP_NUM_THREADS"] = "1"  # OpenMP
+os.environ["OPENBLAS_NUM_THREADS"] = "1"  # OpenBLAS
+os.environ["MKL_NUM_THREADS"] = "1"  # MKL
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"  # Accelerate
+os.environ["NUMEXPR_NUM_THREADS"] = "1"  # NumExpr
+
 import shutil
 import sys
 import time
