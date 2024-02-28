@@ -24,27 +24,20 @@ def adjust_matrices(core_count, tmp_dir, rank):
     a_file = os.path.join(tmp_dir, f"proc_{rank}_A.csv")
     if os.path.exists(a_file):  # Check if the file exists
         a_df = pd.read_csv(a_file, index_col=0)
-        # This assumes num_rows is defined or accessible. Adjust accordingly.
         a_df *= np.sqrt(num_rows)
         a_df.to_csv(a_file)
-
+        
 def merge_and_cleanup_files(folder, file_type, rank, size, comm):
     """
     Merge files of a given type (S or A) into equally sized groups, leaving any leftovers unprocessed.
-    Save the merged files in the 'tmp' folder. Abort the run if the number of files is less than the number of cores.
+    Save the merged files in the 'tmp' folder.
     """
     tmp_files_path = os.path.join(folder, "tmp")
     files = [f for f in os.listdir(tmp_files_path) if re.match(f"proc_tmp_\\d+_{file_type}.csv", f)]
     files.sort(key=lambda x: int(re.search(r'(\d+)', x).group()))
 
+    # Calculate files to be merged and leftovers
     total_files = len(files)
-
-    # Abort the run if the number of proc_tmp files is lower than the number of cores
-    if total_files < size:
-        if rank == 0:  # Let only the root process print the error message
-            print(f"Error: The number of {file_type} files ({total_files}) is less than the number of cores ({size}). Aborting.")
-        comm.Abort()  # Abort the run across all processes
-
     files_to_be_merged = total_files - (total_files % size)
     files_per_process = files_to_be_merged // size
 
@@ -63,6 +56,7 @@ def merge_and_cleanup_files(folder, file_type, rank, size, comm):
     if dfs:  # Check if there are dataframes to merge
         output_file = os.path.join(tmp_files_path, f"proc_{rank}_{file_type}.csv")
         merged_df.to_csv(output_file, index=False)
+        #print(f"Process {rank} merged {len(process_files)} files into {output_file}")
 
     # Synchronize processes before cleanup
     comm.Barrier()
@@ -71,6 +65,7 @@ def merge_and_cleanup_files(folder, file_type, rank, size, comm):
     if rank == 0:
         for i in range(files_to_be_merged):
             os.remove(os.path.join(tmp_files_path, files[i]))
+            #print(f"Deleted processed file: {files[i]}")
 
 def main():
     parser = argparse.ArgumentParser(description='Merge CSV files with MPI, ensuring equal distribution of files.')
@@ -88,7 +83,7 @@ def main():
     if size != args.num_cores:
         if rank == 0:
             print("Error: The number of MPI processes does not match the number of specified cores.")
-        sys.exit()
+        exit()
 
     merge_and_cleanup_files(args.output_folder, "S", rank, size, comm)
     merge_and_cleanup_files(args.output_folder, "A", rank, size, comm)
