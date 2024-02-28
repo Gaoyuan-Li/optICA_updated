@@ -175,7 +175,7 @@ if rank == 0:
 # Place clustered components into correct bins
 
 if rank == 0:
-    print("Loading individual S and A matrices")
+    print("\nLoading individual S and A matrices")
     start = 0
     end = 0
     S_bins = {i: [] for i in range(n_clusters)}
