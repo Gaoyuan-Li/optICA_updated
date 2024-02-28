@@ -187,8 +187,8 @@ for counter, i in enumerate(worker_tasks[rank]):
     S = pd.DataFrame(ica.fit_transform(X), index=X.index)
     A = pd.DataFrame(ica.mixing_, index=X.columns)
     
-    S.to_csv(os.path.join(tmp_dir, "proc_tmp_{}_S.csv".format(i)))
-    A.to_csv(os.path.join(tmp_dir, "proc_tmp_{}_A.csv".format(i)))
+    S.to_csv(os.path.join(tmp_dir, "proc_{}_S.csv".format(i)))
+    A.to_csv(os.path.join(tmp_dir, "proc_{}_A.csv".format(i)))
 
     print("\nCompleted run {} of {} on Processor {}".format(counter + 1, n_tasks, rank))
     t = timeit(t)

@@ -86,8 +86,12 @@ t = time.time()
 
 # ----------------------------------------------------------
 
-# Define tasks as blocks for outer products
-tasks = [(i, j) for i in range(nWorkers) for j in range(i, nWorkers)]
+# Discover available proc_i_S.csv files
+proc_files = [f for f in os.listdir(tmp_dir) if f.startswith("proc_") and f.endswith("_S.csv")]
+proc_indices = [int(f.split('_')[1]) for f in proc_files]
+
+# Generate task pairs based on available files
+tasks = [(i, j) for i in proc_indices for j in proc_indices if i <= j]
 
 # Split up tasks evenly
 

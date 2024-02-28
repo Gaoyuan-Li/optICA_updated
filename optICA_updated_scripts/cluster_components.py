@@ -119,9 +119,22 @@ if rank == 0:
 
 block = []
 block_size = {}
-for i in range(nWorkers):
+
+def get_matrix_count(tmp_dir):
+    files = os.listdir(tmp_dir)
+    max_rank = -1  # Initialize with -1 to indicate no files found yet
+    for file_name in files:
+        match = re.match(r'proc_(\d+)_S.csv', file_name)
+        if match:
+            rank = int(match.group(1))
+            max_rank = max(max_rank, rank)
+    return max_rank
+
+max_rank = get_matrix_count(tmp_dir)
+
+for i in range(max_rank):
     col = []
-    for j in range(nWorkers):
+    for j in range(max_rank):
         if i <= j:
             mat = sparse.load_npz(os.path.join(tmp_dir, "dist_{}_{}.npz".format(i, j)))
             col.append(mat)
@@ -156,6 +169,7 @@ with warnings.catch_warnings():
 if rank == 0:
     t = timeit(t)
     print("\nIdentified", n_clusters, "clusters")
+
 # -----------------------------------------------------------
 
 # Place clustered components into correct bins
@@ -167,7 +181,7 @@ if rank == 0:
     S_bins = {i: [] for i in range(n_clusters)}
     A_bins = {i: [] for i in range(n_clusters)}
 
-    for i in range(nWorkers):
+    for i in range(max_rank):
         # Get labels for each partial matrix
         end += block_size[i]
         proc_labels = labels[start:end]
