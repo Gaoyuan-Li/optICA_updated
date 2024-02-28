@@ -7,10 +7,31 @@ import re
 import numpy as np
 import sys
 
+def check_and_delete_small_files(tmp_dir):
+    """
+    Checks the size of all CSV files in the tmp directory and deletes those that are less than 1B in size,
+    along with their corresponding S or A files.
+    """
+    all_files = os.listdir(tmp_dir)
+    for file in all_files:
+        file_path = os.path.join(tmp_dir, file)
+        # Check if the file is a CSV file and its size is less than 1B
+        if file.endswith('.csv') and os.path.getsize(file_path) < 1:
+            os.remove(file_path)  # Delete the file
+            
+            # Determine the corresponding file name
+            base_name = file.rsplit('_', 1)[0]  # Remove the last part after '_'
+            counterpart_suffix = 'A.csv' if '_S.csv' in file else 'S.csv'
+            counterpart_file = f"{base_name}_{counterpart_suffix}"
+            counterpart_path = os.path.join(tmp_dir, counterpart_file)
+            if os.path.exists(counterpart_path):
+                os.remove(counterpart_path)  # Delete the corresponding file if it exists
+
 def adjust_matrix(file_path):
     """
     Adjusts a single matrix based on its file name.
     """
+    
     if "_S.csv" in file_path:
         df = pd.read_csv(file_path, index_col=0)
         num_rows = df.shape[0]
@@ -54,10 +75,18 @@ def main():
             print("Error: The number of MPI processes does not match the number of specified cores.")
         sys.exit()
 
-    if rank == 0:
-        print("\nAdjusting matrices across MPI processes")
-
     tmp_dir = os.path.join(args.output_folder, "tmp")
+    
+    if rank == 0:
+        print("\nChecking and deleting small files.")
+        check_and_delete_small_files(tmp_dir)
+        
+    # Ensure all processes wait until the deletion of small files is completed
+    comm.Barrier()
+    
+    if rank == 0:
+        print("\nAdjusting matrices")
+
     all_files = [f for f in os.listdir(tmp_dir) if f.endswith('.csv') and ('_S.csv' in f or '_A.csv' in f)]
 
     # Distribute file names to processes
