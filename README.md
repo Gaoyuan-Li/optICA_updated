@@ -5,11 +5,17 @@
 
 This repository contains scripts for running Independent Component Analysis (ICA) from a set of dimensions and get optimal dimensionality (optICA). It is updated from [SBRG/modulome-workflow/4_optICA](https://github.com/SBRG/modulome-workflow/tree/main/4_optICA), incorporating the latest enhancements and fixes.
 
+## Update - 2/28/2024
+
+###### General Updates
+
+Update the adjust_csv.py to check the size of csv files first, preventing error from pd.read_csv
+
 ## Update - 2/27/2024
 
 ###### General Updates
 
-Update the merge_csv.py to merge_csv_MPI.py for paralleling computing
+Update the adjust_csv.py to adjust_csv_MPI.py for paralleling computing
 
 ## Update - 2/26/2024
 
