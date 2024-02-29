@@ -77,6 +77,25 @@ rank = comm.Get_rank()
 nWorkers = comm.Get_size()
 
 # -----------------------------------------------------------
+# Set output files
+if args.out_dir == "":
+    OUT_DIR = os.getcwd()
+else:
+    OUT_DIR = args.out_dir
+
+tmp_dir = os.path.join(OUT_DIR, "tmp")
+
+def get_matrix_count(tmp_dir):
+    files = os.listdir(tmp_dir)
+    max_rank = -1  # Initialize with -1 to indicate no files found yet
+    for file_name in files:
+        match = re.match(r'proc_(\d+)_S.csv', file_name)
+        if match:
+            rank = int(match.group(1))
+            max_rank = max(max_rank, rank)
+    return max_rank
+
+max_rank = get_matrix_count(tmp_dir)
 
 # Define parameters
 
@@ -85,15 +104,8 @@ n_iters = args.iterations
 eps = args.dist  # Clustering dissimilarity threshold for DBSCAN
 
 # Minimum number of samples in a neighborhood to seed a cluster
-min_samples = int(round(args.min_frac * n_iters)) + 1
+min_samples = int(round(args.min_frac * max_rank)) + 1
 
-# Set output files
-if args.out_dir == "":
-    OUT_DIR = os.getcwd()
-else:
-    OUT_DIR = args.out_dir
-
-tmp_dir = os.path.join(OUT_DIR, "tmp")
 # -----------------------------------------------------------
 
 
@@ -258,8 +270,9 @@ if rank == 0:
 
 # Write to file
 if rank == 0:
+    max_rank = get_matrix_count(tmp_dir)
     # Remove components that exist in under 50% of runs
-    good_comps = df_stats[df_stats["count"] > n_iters * 0.5].index
+    good_comps = df_stats[df_stats["count"] > max_rank * 0.5].index
 
     S_final.columns = range(len(S_final.columns))
     A_final.columns = range(len(A_final.columns))
