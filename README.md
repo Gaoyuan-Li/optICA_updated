@@ -51,6 +51,8 @@ The `compute_distance.py` script has been updated to remain functional even when
 
 ## Usage
 
+Usage of the py37 version and py312 version are the same
+
 ```bash
 Usage: run_ica.sh [ARGS] FILE
 
@@ -81,7 +83,8 @@ Please install the conda environment using the yml file
 **Change the 'prefix' before install it**
 
 ```python
-conda env create -f optICA_updated.yml
+conda env create -f optICA_updated_py37.yml
+conda env create -f optICA_updated_py312.yml
 ```
 
 ## Notes
