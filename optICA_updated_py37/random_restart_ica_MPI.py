@@ -172,7 +172,7 @@ else:
 if rank == 0:
     t = timeit(t)
     print("\nRunning ICA...")
-
+    
 S = []
 A = []
 
