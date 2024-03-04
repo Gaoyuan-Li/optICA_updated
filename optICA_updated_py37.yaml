@@ -17,6 +17,7 @@ dependencies:
   - ipywidgets
   - mpi4py
   - scikit-learn
+  - scikit-learn-intelex
   - nextflow
   - pymodulon
 prefix: /home/gaoyuan/miniconda3/envs/optICA_updated_py37
