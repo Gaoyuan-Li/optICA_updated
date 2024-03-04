@@ -1,0 +1,22 @@
+name: optICA_updated_py37
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=3.7
+  - matplotlib
+  - pandas
+  - notebook
+  - seaborn
+  - numpy
+  - jupyterlab
+  - scipy
+  - entrez-direct
+  - tqdm
+  - ipywidgets
+  - mpi4py
+  - scikit-learn
+  - nextflow
+  - pymodulon
+prefix: /home/gaoyuan/miniconda3/envs/optICA_updated_py37
